@@ -3,3 +3,5 @@
 /input/**.csv
 
 /QrCode/**.png
+
+/Output/**.pdf

@@ -86,9 +86,10 @@ class QrGenerator:
         try:
             files = os.listdir(directory_path)
             for file in files:
-                file_path = os.path.join(directory_path, file)
-                if os.path.isfile(file_path):
-                    os.remove(file_path)
+                if file != ".gitkeep":
+                    file_path = os.path.join(directory_path, file)
+                    if os.path.isfile(file_path):
+                        os.remove(file_path)
         except OSError:
             print("Ein Fehler ist aufgetreten die QR Code Bilder zu löschen. \n Bitte im Pfad ./QrCode/ manuell löschen.")
     
