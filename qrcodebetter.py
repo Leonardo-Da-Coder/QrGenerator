@@ -5,8 +5,7 @@ import glob
 import qrcode
 from PIL import ImageDraw, ImageFont
 
-class PDF:
-    from pypdf import PdfReader, PdfWriter
+class QrGenerator:
 
     _width=794 
     _height=1123
@@ -39,18 +38,18 @@ class PDF:
 
         for item in inputList:
             if not firstRowfull:
-                can.drawImage("QrCode/qrcode_{0}.png".format(item),x=0,y=0+offsetY,width=PDF.QrSize,height=PDF.QrSize,showBoundary=True)
-                offsetY += PDF.QrSize
-                checkY += PDF.imgSize
+                can.drawImage("QrCode/qrcode_{0}.png".format(item),x=0,y=0+offsetY,width=QrGenerator.QrSize,height=QrGenerator.QrSize,showBoundary=True)
+                offsetY += QrGenerator.QrSize
+                checkY += QrGenerator.imgSize
             if firstRowfull:
-                can.drawImage("QrCode/qrcode_{0}.png".format(item),x=0+offsetX,y=0+offsetY,width=PDF.QrSize,height=PDF.QrSize,showBoundary=True)
-                offsetY += PDF.QrSize
-                checkY += PDF.imgSize
+                can.drawImage("QrCode/qrcode_{0}.png".format(item),x=0+offsetX,y=0+offsetY,width=QrGenerator.QrSize,height=QrGenerator.QrSize,showBoundary=True)
+                offsetY += QrGenerator.QrSize
+                checkY += QrGenerator.imgSize
             
-            if checkY + PDF.imgSize > PDF._height and not item == inputList[-1]:
-                checkX += PDF.imgSize
+            if checkY + QrGenerator.imgSize > QrGenerator._height and not item == inputList[-1]:
+                checkX += QrGenerator.imgSize
                 #Check if right side is full
-                if checkX + PDF.imgSize > PDF._width:
+                if checkX + QrGenerator.imgSize > QrGenerator._width:
                     can.showPage()
                     firstRowfull = False
                     checkX = 0
@@ -60,12 +59,12 @@ class PDF:
 
                 else:
                     firstRowfull = True
-                    offsetX += PDF.QrSize
+                    offsetX += QrGenerator.QrSize
                     checkY = 0
                     offsetY = 0
      
         can.save()
-        PDF.delete_files_in_directory(pathQr)
+        QrGenerator.delete_files_in_directory(pathQr)
     
     #Helper function to set size of QRCode
     def mmtoPixel(mm):
@@ -77,8 +76,8 @@ class PDF:
 
         size = mm / 0.2645833333
         round(size)
-        PDF.QrSize=size
-        PDF.imgSize=size*1.33
+        QrGenerator.QrSize=size
+        QrGenerator.imgSize=size*1.33
         return size
     """
     Deletes all generated QR_Codes
@@ -93,27 +92,27 @@ class PDF:
         except OSError:
             print("Ein Fehler ist aufgetreten die QR Code Bilder zu löschen. \n Bitte im Pfad ./QrCode/ manuell löschen.")
     
-def createQRCode(inputList):
-    """
-    createQrCode generates every item into a QR Code png as qrcode_{item}.png
+    def createQRCode(inputList):
+        """
+        createQrCode generates every item into a QR Code png as qrcode_{item}.png
 
-    :list inputList: a list with items to generate as a QR Code
-    """
-    
-
-    for input in inputList: 
-        saveLocation = "QrCode/qrcode_{0}.png".format(str(input))
-        width, height =(240,240)
-        fontsize = 24
-        font = ImageFont.truetype("Fonts/arial.ttf", fontsize)
-
-        img = qrcode.make(input)
-        draw = ImageDraw.Draw(img)
-
-        _,_,w,h=draw.textbbox((0,0), str(input), font=font)
+        :list inputList: a list with items to generate as a QR Code
+        """
         
-        draw.text((((width-w/2)-90), ((height-h)/2)-105),str(input),font=font)
-        img.save(saveLocation)
+
+        for input in inputList: 
+            saveLocation = "QrCode/qrcode_{0}.png".format(str(input))
+            width, height =(240,240)
+            fontsize = 24
+            font = ImageFont.truetype("Fonts/arial.ttf", fontsize)
+
+            img = qrcode.make(input)
+            draw = ImageDraw.Draw(img)
+
+            _,_,w,h=draw.textbbox((0,0), str(input), font=font)
+            
+            draw.text((((width-w/2)-90), ((height-h)/2)-105),str(input),font=font)
+            img.save(saveLocation)
 
 runningProg=True   
 while(runningProg):
@@ -172,7 +171,7 @@ while(runningProg):
 
     size*=10
 
-    createQRCode(data.eval(columnName).to_list())
-    PDF.mmtoPixel(size)
-    PDF.createPDF(columnName,data.eval(columnName).to_list())
+    QrGenerator.createQRCode(data.eval(columnName).to_list())
+    QrGenerator.mmtoPixel(size)
+    QrGenerator.createPDF(columnName,data.eval(columnName).to_list())
     print("PDF abgespeichert im Ordner Output unter page_{0}.pdf".format(columnName))
